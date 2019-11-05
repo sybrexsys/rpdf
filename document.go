@@ -1,6 +1,8 @@
 package rpdf
 
-import "io"
+import (
+	"io"
+)
 
 type Document struct {
 	pages    []*Page
@@ -22,15 +24,20 @@ func NewDocument(writer io.WriteSeeker, encryptor Encryptor, settings Setting) (
 }
 
 func (doc *Document) NewPage() (*Page, error) {
-	page := newPage(doc.rm)
+	return doc.NewPageWithSize(doc.settings.DefaultPageSize)
+}
+
+func (doc *Document) NewPageWithSize(size CanvasSize) (*Page, error) {
+	page := newPage(doc.rm, float32(size.Width), float32(size.Height))
 	doc.pages = append(doc.pages, page)
 	return page, nil
 }
 
-func (doc *Document) FlushAndDone() error {
+func (doc *Document) Close() error {
 	return nil
 }
 
 func (doc *Document) GetResourceManager() ResourceManager {
+
 	return doc.rm
 }
